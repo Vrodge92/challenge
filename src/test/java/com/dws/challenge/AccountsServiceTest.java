@@ -5,7 +5,11 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.math.BigDecimal;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,18 +21,41 @@ import com.dws.challenge.service.AccountsService;
 
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
+@TestMethodOrder(OrderAnnotation.class)
 public class AccountsServiceTest {
 
 	@Autowired
 	private AccountsService accountsService;
 
 	@Test
+	@Order(1)
 	void addAccount() {
 		Account account = new Account("Id-123");
 		account.setBalance(new BigDecimal(1000));
 		this.accountsService.createAccount(account);
-
 		assertThat(this.accountsService.getAccount("Id-123")).isEqualTo(account);
+	}
+
+	@Test
+	@Order(2)
+	void createDuplicateAccount() throws Exception {
+		Account account = new Account("Id-123");
+		account.setBalance(new BigDecimal(1000));
+		DuplicateAccountIdException thrown = Assertions.assertThrows(DuplicateAccountIdException.class, () -> {
+			this.accountsService.createAccount(account);
+		});
+	}
+
+	@Test
+	@Order(3)
+	void getAccount() throws Exception {
+		Account account = new Account("Id-1234");
+		account.setBalance(new BigDecimal(1000));
+		this.accountsService.createAccount(account);
+
+		Account accountDetails = this.accountsService.getAccount("Id-1234");
+		assertThat(accountDetails.getAccountId()).isEqualTo(account.getAccountId());
+		assertThat(accountDetails.getBalance()).isEqualTo(account.getBalance());
 	}
 
 	@Test
@@ -44,4 +71,5 @@ public class AccountsServiceTest {
 			assertThat(ex.getMessage()).isEqualTo("Account id " + uniqueId + " already exists!");
 		}
 	}
+
 }

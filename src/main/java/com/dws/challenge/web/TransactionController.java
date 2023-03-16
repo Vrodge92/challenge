@@ -1,5 +1,7 @@
 package com.dws.challenge.web;
 
+import java.util.concurrent.CompletableFuture;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,7 +14,7 @@ import com.dws.challenge.domain.TransferRequest;
 import com.dws.challenge.domain.TransferResult;
 import com.dws.challenge.exception.AccountNotExistException;
 import com.dws.challenge.exception.OverDraftException;
-import com.dws.challenge.service.AccountsService;
+import com.dws.challenge.service.TransactionService;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -30,15 +32,16 @@ import lombok.extern.slf4j.Slf4j;
 public class TransactionController {
 
 	@Autowired
-	private AccountsService accountService;
+	private TransactionService transactionService;
 
 	@PostMapping(path = "/amount", consumes = { "application/json" })
 	public ResponseEntity<Object> transferMoney(@Valid @RequestBody TransferRequest request) {
 		log.info("Transfer Request {}", request);
 		try {
-			TransferResult result = accountService.transferBalances(request);
+			transactionService.checkBalance(request);
+			CompletableFuture<TransferResult> result = transactionService.transferBalances(request);
 			return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
-		} catch (AccountNotExistException | OverDraftException e) {
+		} catch (AccountNotExistException | OverDraftException | NullPointerException e) {
 			return new ResponseEntity<>(e, HttpStatus.NOT_MODIFIED);
 		}
 	}

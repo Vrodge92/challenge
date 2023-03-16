@@ -69,10 +69,10 @@ public class TransactionControllerTest {
 				.content("{\"accountId\":\"Id-1235\",\"balance\":200}")).andExpect(status().isCreated());
 
 		this.mockMvc
-		.perform(post("/v1/transaction/amount").contentType(MediaType.APPLICATION_JSON)
-				.content("{\"accountFromId\":\"Id-1234\",\"accountToId\":\"Id-1235\",\"amount\":-1}"))
-		.andExpect(status().isBadRequest());
-		
+				.perform(post("/v1/transaction/amount").contentType(MediaType.APPLICATION_JSON)
+						.content("{\"accountFromId\":\"Id-1234\",\"accountToId\":\"Id-1235\",\"amount\":-1}"))
+				.andExpect(status().isBadRequest());
+
 		Account account = accountsService.getAccount("Id-1234");
 		assertThat(account.getAccountId()).isEqualTo("Id-1234");
 		assertThat(account.getBalance()).isEqualByComparingTo("100");
@@ -87,11 +87,11 @@ public class TransactionControllerTest {
 				.content("{\"accountId\":\"Id-1235\",\"balance\":200}")).andExpect(status().isCreated());
 
 		this.mockMvc
-		.perform(post("/v1/transaction/amount").contentType(MediaType.APPLICATION_JSON)
-				.content("{\"accountFromId\":\"Id-1234\",\"accountToId\":\"Id-1235\",\"amount\":101}"))
-		.andExpect(status().isNotModified());
+				.perform(post("/v1/transaction/amount").contentType(MediaType.APPLICATION_JSON)
+						.content("{\"accountFromId\":\"Id-1234\",\"accountToId\":\"Id-1235\",\"amount\":101}"))
+				.andExpect(status().isNotModified());
 	}
-	
+
 	@Test
 	public void testTransferBalanceWithEmptyFromId() throws Exception {
 
@@ -107,7 +107,7 @@ public class TransactionControllerTest {
 				.andExpect(status().isNotModified());
 
 	}
-	
+
 	@Test
 	public void testTransferBalanceWithEmptyToId() throws Exception {
 

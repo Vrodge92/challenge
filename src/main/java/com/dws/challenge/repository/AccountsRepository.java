@@ -1,11 +1,10 @@
 package com.dws.challenge.repository;
 
+import java.util.Map;
+
 import com.dws.challenge.domain.Account;
 import com.dws.challenge.domain.TransferRequest;
-import com.dws.challenge.domain.TransferResult;
-import com.dws.challenge.exception.AccountNotExistException;
 import com.dws.challenge.exception.DuplicateAccountIdException;
-import com.dws.challenge.exception.OverDraftException;
 
 public interface AccountsRepository {
 
@@ -15,5 +14,5 @@ public interface AccountsRepository {
 
 	void clearAccounts();
 	
-	public TransferResult transferBalances(TransferRequest transfer) throws OverDraftException,AccountNotExistException;
+	public Map<String, Account> transferBalances(TransferRequest transfer);
 }

@@ -29,6 +29,4 @@ public class AccountsService {
 		return this.accountsRepository.getAccount(accountId);
 	}
 
-	
-
 }

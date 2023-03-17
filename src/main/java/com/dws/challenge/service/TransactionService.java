@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.dws.challenge.constant.ErrorCode;
@@ -37,14 +36,13 @@ public class TransactionService {
 
 	/**
 	 * This method transfer balance from one account to another account Also we used
-	 * Async to perform parallel operation with thread safe
+	 * parallel process to perform operation with thread safe
 	 * 
 	 * @param transfer
 	 * @return
 	 * @throws OverDraftException
 	 * @throws AccountNotExistException
 	 */
-	@Async
 	public CompletableFuture<TransferResult> transferBalances(TransferRequest transfer)
 			throws OverDraftException, AccountNotExistException {
 		log.info(System.currentTimeMillis() + " ::saving list of users of size {}", transfer.getAccountFromId(),

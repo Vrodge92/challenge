@@ -1,6 +1,7 @@
 package com.dws.challenge;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
@@ -8,6 +9,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +19,8 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import com.dws.challenge.domain.Account;
 import com.dws.challenge.domain.TransferRequest;
 import com.dws.challenge.domain.TransferResult;
+import com.dws.challenge.exception.AccountNotExistException;
+import com.dws.challenge.exception.OverDraftException;
 import com.dws.challenge.service.AccountsService;
 import com.dws.challenge.service.TransactionService;
 
@@ -76,6 +80,59 @@ public class TransactionServiceTest {
 		BigDecimal balance = result.get().getBalanceAfterTransfer();
 		assertThat(this.accountsService.getAccount("Id-1231").getAccountId()).isEqualTo(value);
 		assertThat(this.accountsService.getAccount("Id-1231").getBalance()).isEqualTo(balance);
+	}
+
+	@Test
+	public void testOverdraftBalance() throws OverDraftException, AccountNotExistException, Exception {
+
+		Account account1 = new Account("Id-1");
+		account1.setBalance(new BigDecimal(10));
+		this.accountsService.createAccount(account1);
+		assertThat(this.accountsService.getAccount("Id-1")).isEqualTo(account1);
+
+		Account account2 = new Account("Id-2");
+		account2.setBalance(new BigDecimal(50));
+		this.accountsService.createAccount(account2);
+		assertThat(this.accountsService.getAccount("Id-2")).isEqualTo(account2);
+
+		TransferRequest transferRequest = new TransferRequest("Id-1", "Id-2", BigDecimal.valueOf(20));
+		OverDraftException thrown = Assertions.assertThrows(OverDraftException.class, () -> {
+			transactionService.transferBalances(transferRequest);
+		});
+		assertTrue(thrown.getMessage().contentEquals(
+				"Account with id:" + account1.getAccountId() + " does not have enough balance to transfer."));
+	}
+
+	@Test
+	public void testTransferBalanceWithEmptyFromId() throws Exception {
+
+		Account account2 = new Account("Id-1242");
+		account2.setBalance(new BigDecimal(50));
+		this.accountsService.createAccount(account2);
+
+		assertThat(this.accountsService.getAccount("Id-1242")).isEqualTo(account2);
+
+		TransferRequest transferRequest = new TransferRequest("Id-1232", "Id-1242", BigDecimal.valueOf(10));
+		AccountNotExistException thrown = Assertions.assertThrows(AccountNotExistException.class, () -> {
+			transactionService.transferBalances(transferRequest);
+		});
+
+	}
+
+	@Test
+	public void testTransferBalanceWithEmptyToId() throws Exception {
+
+		Account account1 = new Account("Id-1233");
+		account1.setBalance(new BigDecimal(100));
+		this.accountsService.createAccount(account1);
+
+		assertThat(this.accountsService.getAccount("Id-1233")).isEqualTo(account1);
+
+		TransferRequest transferRequest = new TransferRequest("Id-1233", "Id-1244", BigDecimal.valueOf(10));
+		AccountNotExistException thrown = Assertions.assertThrows(AccountNotExistException.class, () -> {
+			transactionService.transferBalances(transferRequest);
+		});
+
 	}
 
 	/**

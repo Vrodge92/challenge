@@ -38,7 +38,6 @@ public class TransactionController {
 	public ResponseEntity<Object> transferMoney(@Valid @RequestBody TransferRequest request) {
 		log.info("Transfer Request {}", request);
 		try {
-			transactionService.checkBalance(request);
 			CompletableFuture<TransferResult> result = transactionService.transferBalances(request);
 			return new ResponseEntity<>(result, HttpStatus.ACCEPTED);
 		} catch (AccountNotExistException | OverDraftException | NullPointerException e) {

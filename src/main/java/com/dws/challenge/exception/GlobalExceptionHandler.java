@@ -24,9 +24,14 @@ public class GlobalExceptionHandler {
 		}));
 		return new ResponseEntity<Map<String, String>>(resp, HttpStatus.BAD_REQUEST);
 	}
-	
+
 	@ExceptionHandler(OverDraftException.class)
-	public ResponseEntity<Object> HandleOverDraftException(OverDraftException ovd) {
-		return new ResponseEntity<Object>(ovd.getMessage(),HttpStatus.NOT_MODIFIED);
+	public ResponseEntity<Object> handleOverDraftException(OverDraftException ovd) {
+		return new ResponseEntity<Object>(ovd.getMessage(), HttpStatus.NOT_MODIFIED);
+	}
+
+	@ExceptionHandler(AccountNotExistException.class)
+	public ResponseEntity<Object> handleAccountNotExistException(AccountNotExistException ex) {
+		return new ResponseEntity<Object>(ex.getMessage(), HttpStatus.NOT_FOUND);
 	}
 }

@@ -43,4 +43,9 @@ public class AccountsRepositoryInMemory implements AccountsRepository {
 		return accounts;
 	}
 
+	@Override
+	public Map<String, Account> getAccount() {
+		return accounts;
+	}
+
 }

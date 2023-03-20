@@ -36,7 +36,7 @@ public class TransactionService {
 
 	/**
 	 * This method transfer balance from one account to another account Also we used
-	 * parallel process to perform operation with thread safe
+	 * parallel process to perform operation
 	 * 
 	 * @param transfer
 	 * @return

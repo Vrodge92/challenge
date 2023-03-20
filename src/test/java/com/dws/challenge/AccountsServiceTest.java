@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.dws.challenge.domain.Account;
+import com.dws.challenge.exception.AccountNotExistException;
 import com.dws.challenge.exception.DuplicateAccountIdException;
 import com.dws.challenge.service.AccountsService;
 
@@ -56,6 +57,14 @@ public class AccountsServiceTest {
 		Account accountDetails = this.accountsService.getAccount("Id-1234");
 		assertThat(accountDetails.getAccountId()).isEqualTo(account.getAccountId());
 		assertThat(accountDetails.getBalance()).isEqualTo(account.getBalance());
+	}
+
+	@Test
+	@Order(4)
+	void getAccountForUserNotFoundException() throws Exception {
+		AccountNotExistException thrown = Assertions.assertThrows(AccountNotExistException.class, () -> {
+			this.accountsService.getAccount("123");
+		});
 	}
 
 	@Test

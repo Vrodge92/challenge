@@ -102,4 +102,9 @@ public class AccountsControllerTest {
 		this.mockMvc.perform(get("/v1/accounts/" + uniqueAccountId)).andExpect(status().isOk())
 				.andExpect(content().string("{\"accountId\":\"" + uniqueAccountId + "\",\"balance\":123.45}"));
 	}
+
+	@Test
+	void getAccountForAccountNotFoundException() throws Exception {
+		this.mockMvc.perform(get("/v1/accounts/3")).andExpect(status().isNotFound());
+	}
 }

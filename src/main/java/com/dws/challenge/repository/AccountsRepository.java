@@ -15,4 +15,6 @@ public interface AccountsRepository {
 	void clearAccounts();
 	
 	public Map<String, Account> transferBalances(TransferRequest transfer);
+	
+	Map<String, Account> getAccount();
 }
